@@ -1,0 +1,667 @@
+[
+    {
+        "classname": "android.bluetooth.BluetoothAdapter",
+        "classmethod": "getAddress",
+        "param":[],
+        "return":"java.lang.String",
+        "label": []
+    },
+    {
+        "classname": "java.net.NetworkInterface",
+        "classmethod": "getHardwareAddress",
+        "param":[],
+        "return":"java.lang.byte",
+        "label":["mac_address"]
+    },
+    {
+        "classname": "android.net.wifi.WifiInfo",
+        "classmethod": "getMacAddress",
+        "param":[],
+        "return":"java.lang.string",
+        "label":["mac_address"]
+    },
+    {
+        "classname": "android.net.wifi.WifiInfo",
+        "classmethod": "getSSID",
+        "param":[],
+        "return":"java.lang.String",
+        "label":["ssid"]
+    },
+    {
+        "classname": "android.net.wifi.WifiInfo",
+        "classmethod": "getSubscriptionId",
+        "param":[],
+        "return":"int",
+        "label":["iccid"]
+    },
+    {
+        "classname": "android.net.wifi.WifiInfo",
+        "classmethod": "getNetworkId",
+        "param":[],
+        "return":"int",
+        "label":["ssid"]
+    },
+    {
+        "classname": "android.net.wifi.WifiInfo",
+        "classmethod": "getIpAddress",
+        "param":[],
+        "return":"int",
+        "label": []
+    },
+    {
+        "classname":"android.provider.Settings.Secure",
+        "classmethod":"getString",
+        "param":["android.content.ContentResolver","java.lang.String"],
+        "return": "java.lang.String",
+        "label": []
+    },
+    {
+        "classname":"android.provider.Settings.System",
+        "classmethod":"getString",
+        "param":["android.content.ContentResolver","java.lang.String"],
+        "return": "java.lang.String",
+        "label": []
+    },
+    {
+        "classname":"com.google.android.gms.ads.identifier.AdvertisingIdClient",
+        "classmethod":"getAdvertisingIdInfo",
+        "param":["android.content.Context"],
+        "return":"",
+        "label":["mobile_ad_identifier"]
+    },
+    {
+        "classname":"java.util.Locale",
+        "classmethod":"getCountry",
+        "param":[],
+        "return": "java.lang.String",
+        "label":["general_location"]
+    },
+    {
+        "classname":"android.app.ActivityManager",
+        "classmethod":"getDeviceConfigurationInfo",
+        "param":[],
+        "return": "android.content.pm.ConfigurationInfo",
+        "label": []
+    },
+    {
+        "classname":"android.app.ActivityManager",
+        "classmethod":"getMemoryInfo",
+        "param":["android.app.ActivityManager$MemoryInfo"],
+        "return": "",
+        "label": []
+    },
+    {
+        "classname":"android.app.ActivityManager",
+        "classmethod":"getMyMemoryState",
+        "param":["android.app.ActivityManager$RunningAppProcessInfo"],
+        "return": "",
+        "label": []
+    },
+    {
+        "classname":"android.app.ActivityManager",
+        "classmethod":"getProcessMemoryInfo",
+        "param":["[I"],
+        "return": "[Landroid.os.Debug$MemoryInfo;",
+        "label": []
+    },
+    {
+        "classname":"android.app.LocaleManager",
+        "classmethod":"getSystemLocales",
+        "param":[],
+        "return": "android.os.LocaleList",
+        "label": []
+    },
+    {
+        "classname":"android.app.LocaleManager",
+        "classmethod":"getApplicationLocales",
+        "param":[],
+        "return": "android.os.LocaleList",
+        "label": []
+    },
+    {
+        "classname":"android.app.LocaleManager",
+        "classmethod":"getApplicationLocales",
+        "param":["java.lang.String"],
+        "return": "android.os.LocaleList",
+        "label": []
+    },
+    {
+        "classname":"android.app.usage.UsageStatsManager",
+        "classmethod":"queryConfigurations",
+        "param":["int","long","long"],
+        "return":"java.util.List",
+        "label":["app_activity"]
+    },
+    {
+        "classname":"android.hardware.ConsumerIrManager",
+        "classmethod":"hasIrEmitter",
+        "param":[],
+        "return":"boolean",
+        "label": []
+    },
+    {
+        "classname":"android.hardware.Sensor",
+        "classmethod":"getName",
+        "param":[],
+        "return":"java.lang.String",
+        "label": []
+    },
+    {
+        "classname":"android.hardware.Sensor",
+        "classmethod":"getPower",
+        "param":[],
+        "return":"float",
+        "label": []
+    },
+    {
+        "classname":"android.hardware.Sensor",
+        "classmethod":"getType",
+        "param":[],
+        "return":"int",
+        "label": []
+    },
+    {
+        "classname":"android.hardware.SensorManager",
+        "classmethod":"getAltitude",
+        "param":["float","float"],
+        "return":"float",
+        "label":["location"]
+    },
+    {
+        "classname":"android.hardware.SensorManager",
+        "classmethod":"getAngleChange",
+        "param":["[F","[F","[F"],
+        "return":"",
+        "label":["sensor"]
+    },
+    {
+        "classname":"android.hardware.SensorManager",
+        "classmethod":"getDefaultSensor",
+        "param":["int"],
+        "return":"android.hardware.Sensor",
+        "label":["sensor"]
+    },
+    {
+        "classname":"android.hardware.SensorManager",
+        "classmethod":"getDefaultSensor",
+        "param":["int","boolean"],
+        "return":"android.hardware.Sensor",
+        "label":["sensor"]
+    },
+    {
+        "classname":"android.hardware.SensorManager",
+        "classmethod":"getDynamicSensorList",
+        "param":["int"],
+        "return":"java.util.List",
+        "label":["sensor"]
+    },
+    {
+        "classname":"android.hardware.SensorManager",
+        "classmethod":"getInclination",
+        "param":["[F"],
+        "return":"float",
+        "label":["location"]
+    },
+    {
+        "classname":"android.hardware.SensorManager",
+        "classmethod":"getOrientation",
+        "param":["[F","[F"],
+        "return":"[F",
+        "label":["location"]
+    },
+    {
+        "classname":"android.hardware.SensorManager",
+        "classmethod":"getSensorList",
+        "param":["int"],
+        "return":"java.util.List",
+        "label":["sensor"]
+    },
+    {
+        "classname":"android.hardware.biometrics.BiometricManager",
+        "classmethod":"canAuthenticate",
+        "param":[],
+        "return":"int",
+        "label":["security_credentials"]
+    },
+    {
+        "classname":"android.hardware.biometrics.BiometricManager",
+        "classmethod":"canAuthenticate",
+        "param":["int"],
+        "return":"int",
+        "label":["security_credentials"]
+    },
+    {
+        "classname":"android.hardware.fingerprint.FingerprintManager",
+        "classmethod":"hasEnrolledFingerprints",
+        "param":[],
+        "return":"boolean",
+        "label":["security_credentials"]
+    },
+    {
+        "classname":"android.hardware.fingerprint.FingerprintManager",
+        "classmethod":"isHardwareDetected",
+        "param":[],
+        "return":"boolean",
+        "label":["security_credentials"]
+    },
+    {
+        "classname":"android.hardware.input.InputManager",
+        "classmethod":"getInputDevice",
+        "param":["int"],
+        "return":"android.view.InputDevice",
+        "label": []
+    },
+    {
+        "classname":"android.hardware.input.InputManager",
+        "classmethod":"getInputDeviceIds",
+        "param":[],
+        "return":"[I",
+        "label": []
+    },
+    {
+        "classname":"android.hardware.usb.UsbManager",
+        "classmethod":"getAccessoryList",
+        "param":[],
+        "return":"[Landroid.hardware.usb.UsbAccessory;",
+        "label": []
+    },
+    {
+        "classname":"android.hardware.usb.UsbManager",
+        "classmethod":"getDeviceList",
+        "param":[],
+        "return":"java.util.HashMap",
+        "label": []
+    },
+    {
+        "classname":"android.os.HardwarePropertiesManager",
+        "classmethod":"getCpuUsages",
+        "param":[],
+        "return":"[Landroid.os.CpuUsageInfo;",
+        "label": []
+    },
+    {
+        "classname":"android.telephony.euicc.EuiccManager",
+        "classmethod":"getEuiccInfo",
+        "param":[],
+        "return":"android.telephony.euicc.EuiccInfo",
+        "label":["iccid"]
+    },
+    {
+        "classname":"android.view.accessibility.CaptioningManager",
+        "classmethod":"getLocale",
+        "param":[],
+        "return":"java.util.Locale",
+        "label": ["general_location"]
+    },
+    {
+        "classname":"android.os.Build",
+        "classmethod":"getSerial",
+        "param":[],
+        "return":"java.lang.String",
+        "label":["android_id"]
+    },
+    {
+        "classname":"android.os.Environment",
+        "classmethod":"getExternalStorageState",
+        "param":[],
+        "return":"java.lang.String",
+        "label": []
+    },
+    {
+        "classname":"android.os.Environment",
+        "classmethod":"getExternalStorageState",
+        "param":["java.io.File"],
+        "return":"java.lang.String",
+        "label": []
+    },
+    {
+        "classname":"android.util.EventLog",
+        "classmethod":"readEvents",
+        "param":["[I","java.util.Collection"],
+        "return":"",
+        "label": []
+    },
+    {
+        "classname":"android.net.wifi.WifiManager$LocalOnlyHotspotReservation",
+        "classmethod":"getWifiConfiguration",
+        "param":[],
+        "return":"android.net.wifi.WifiConfiguration",
+        "label": []
+    },
+    {
+        "classname":"android.net.wifi.WifiManager$LocalOnlyHotspotReservation",
+        "classmethod":"getWifiConfiguration",
+        "param":[],
+        "return":"android.net.wifi.WifiConfiguration",
+        "label": []
+    },
+    {
+        "classname":"androidx.core.app.ActivityCompat",
+        "classmethod":"requestPermissions",
+        "param":["android.app.Activity","[Ljava.lang.String;","int"],
+        "return":"",
+        "label":[]
+    },
+    {
+        "classname":"android.app.Activity",
+        "classmethod":"requestPermissions",
+        "param":["[Ljava.lang.String;","int"],
+        "return":"",
+        "label":[]
+    },
+    {
+        "classname":"androidx.activity.result.contract.ActivityResultContracts$RequestPermission",
+        "classmethod":"$init",
+        "param":[],
+        "return":"",
+        "label":[]
+    },
+    {
+        "classname":"androidx.activity.result.contract.ActivityResultContracts$RequestMultiplePermissions",
+        "classmethod":"$init",
+        "param":[],
+        "return":"",
+        "label":[]
+    },
+    {
+        "classname":"androidx.core.app.ContextCompat",
+        "classmethod":"checkSelfPermission",
+        "param":["android.content.Context","java.lang.String"],
+        "return":"int",
+        "label":[]
+    },
+    {
+        "classname":"androidx.fragment.app.FragmentActivity",
+        "classmethod":"onRequestPermissionsResult",
+        "param":["int","[Ljava.lang.String;","[I"],
+        "return":"int",
+        "label":[]
+    },
+    {
+        "classname":"com.sfbx.appconsentv3.ui.AppConsentImpl",
+        "classmethod":"presentNotice",
+        "param":["boolean"],
+        "return":"boolean",
+        "label":["cmp"]
+    },
+    {
+        "classname":"io.didomi.sdk.Didomi",
+        "classmethod":"showNotice",
+        "param":["androidx.fragment.app.FragmentActivity"],
+        "return":"",
+        "label":["cmp"]
+    },
+    {
+        "classname": "java.util.Locale",
+        "classmethod": "getISOCountries",
+        "param":[],
+        "return":"[Ljava.lang.String;",
+        "label":["general_location"]
+    },
+    {
+        "classname": "android.location.Address",
+        "classmethod": "getCountryCode",
+        "param":[],
+        "return":"java.lang.String",
+        "label":["general_location"]
+    },
+    {
+        "classname": "android.location.Address",
+        "classmethod": "getCountryName",
+        "param":[],
+        "return":"java.lang.String",
+        "label":["general_location"]
+    },
+    {
+        "classname": "android.telephony.CellIdentityTdscdma",
+        "classmethod": "getMccString",
+        "param":[],
+        "return":"java.lang.String",
+        "label":[]
+    },
+    {
+        "classname": "android.telephony.TelephonyManager",
+        "classmethod": "getSubscriberId",
+        "param":[],
+        "return":"java.lang.String",
+        "label":["imsi"]
+    },
+    {
+        "classname": "android.service.carrier.CarrierIdentifier",
+        "classmethod": "getImsi",
+        "param":[],
+        "return":"java.lang.String",
+        "label":["imsi"]
+    },
+    {
+        "classname": "android.telephony.TelephonyManager",
+        "classmethod": "getImei",
+        "param":[],
+        "return":"java.lang.String",
+        "label":["imei"]
+    },
+    {
+        "classname": "android.location.Location",
+        "classmethod": "getLongitude",
+        "param":[],
+        "return":"double",
+        "label":["location"]
+    },
+    {
+        "classname": "android.location.Location",
+        "classmethod": "getLatitude",
+        "param":[],
+        "return":"double",
+        "label":["location"]
+    },
+    {
+        "classname": "android.location.Location",
+        "classmethod": "getAltitude",
+        "param":[],
+        "return":"double",
+        "label":["location"]
+    },
+    {
+        "classname": "android.telephony.TelephonyManager",
+        "classmethod": "getSimSerialNumber",
+        "param":[],
+        "return":"java.lang.String",
+        "label":["iccid"]
+    },
+    {
+        "classname": "android.telephony.SubscriptionInfo",
+        "classmethod": "getIccId",
+        "param":[],
+        "return":"java.lang.String",
+        "label":["iccid"]
+    },
+    {
+        "classname": "android.location.Address",
+        "classmethod": "getPhone",
+        "param":[],
+        "return":"java.lang.String",
+        "label":["telephone_number"]
+    },
+    {
+        "classname": "de.cellular.focus.gdpr_consent.SourcepointLocalClient",
+        "classmethod": "onUIReady",
+        "param":["android.view.View"],
+        "return":"",
+        "label":["cmp"]
+    },
+    {
+        "classname": "og.g$c",
+        "classmethod": "onUIReady",
+        "param":["android.view.View"],
+        "return":"",
+        "label":["cmp"]
+    },
+    {
+        "classname": "com.podme.sourcepoint.SourcePointActivity$LocalClient",
+        "classmethod": "onUIReady",
+        "param":["android.view.View"],
+        "return":"",
+        "label":["cmp"]
+    },
+    {
+        "classname": "r1.a",
+        "classmethod": "onUIReady",
+        "param":["android.view.View"],
+        "return":"",
+        "label":["cmp"]
+    },
+    {
+        "classname": "de.pixelhouse.chefkoch.app.screen.consent.ConsentViewSupport$LocalClient",
+        "classmethod": "onUIReady",
+        "param":["android.view.View"],
+        "return":"",
+        "label":["cmp"]
+    },
+    {
+        "classname": "de.rtli.everest.controller.ConsentController$LocalClient",
+        "classmethod": "onUIReady",
+        "param":["android.view.View"],
+        "return":"",
+        "label":["cmp"]
+    },
+    {
+        "classname": "com.guardian.feature.consent.activity.ConsentViewModel$LocalClient",
+        "classmethod": "onUIReady",
+        "param":["android.view.View"],
+        "return":"",
+        "label":["cmp"]
+    },
+    {
+        "classname": "com.guardian.feature.consent.usecase.SendPageViewConsents$LocalClient",
+        "classmethod": "onUIReady",
+        "param":["android.view.View"],
+        "return":"",
+        "label":["cmp"]
+    },
+    {
+        "classname": "ae.c$a",
+        "classmethod": "onUIReady",
+        "param":["android.view.View"],
+        "return":"",
+        "label":["cmp"]
+    },
+    {
+        "classname": "com.horizon.android.feature.consent.helper.SpClientAdapter",
+        "classmethod": "onUIReady",
+        "param":["android.view.View"],
+        "return":"",
+        "label":["cmp"]
+    },
+    {
+        "classname": "me.e$a",
+        "classmethod": "onUIReady",
+        "param":["android.view.View"],
+        "return":"",
+        "label":["cmp"]
+    },
+    {
+        "classname": "e4.a",
+        "classmethod": "onUIReady",
+        "param":["android.view.View"],
+        "return":"",
+        "label":["cmp"]
+    },
+    {
+        "classname": "u8.a",
+        "classmethod": "onUIReady",
+        "param":["android.view.View"],
+        "return":"",
+        "label":["cmp"]
+    },
+    {
+        "classname": "sg.a$a",
+        "classmethod": "onUIReady",
+        "param":["android.view.View"],
+        "return":"",
+        "label":["cmp"]
+    },
+    {
+        "classname": "nl.fd.bnr.main.MainActivity$b",
+        "classmethod": "onUIReady",
+        "param":["android.view.View"],
+        "return":"",
+        "label":["cmp"]
+    },
+    {
+        "classname": "nl.fd.app.ConsentManager$a",
+        "classmethod": "onUIReady",
+        "param":["android.view.View"],
+        "return":"",
+        "label":["cmp"]
+    },
+    {
+        "classname": "com.iapps.baseapp.q.a$b",
+        "classmethod": "onUIReady",
+        "param":["android.view.View"],
+        "return":"",
+        "label":["cmp"]
+    },
+    {
+        "classname": "com.twipernsourcepointwrapper.SourcepointActivity$LocalClient",
+        "classmethod": "onUIReady",
+        "param":["android.view.View"],
+        "return":"",
+        "label":["cmp"]
+    },
+    {
+        "classname": "de.axelspringer.yana.userconsent.SourcePointView$Client",
+        "classmethod": "onUIReady",
+        "param":["android.view.View"],
+        "return":"",
+        "label":["cmp"]
+    },
+    {
+        "classname": "de.toggo.vod.ui.generic.MainActivity$LocalClient",
+        "classmethod": "onUIReady",
+        "param":["android.view.View"],
+        "return":"",
+        "label":["cmp"]
+    },
+    {
+        "classname": "de.toggolino.medienhub.gdpr.SourcePoint$LocalClient",
+        "classmethod": "onUIReady",
+        "param":["android.view.View"],
+        "return":"",
+        "label":["cmp"]
+    },
+    {
+        "classname": "de.wetteronline.components.consent.sourcepoint.SourcePointFlow",
+        "classmethod": "onUIReady",
+        "param":["android.view.View"],
+        "return":"",
+        "label":["cmp"]
+    },
+    {
+        "classname": "wb.a",
+        "classmethod": "onUIReady",
+        "param":["android.view.View"],
+        "return":"",
+        "label":["cmp"]
+    },
+    {
+        "classname": "fr.lepoint.android.sourcePoint.LocalClient",
+        "classmethod": "onUIReady",
+        "param":["android.view.View"],
+        "return":"",
+        "label":["cmp"]
+    },
+    {
+        "classname": "com.schibsted.smdprivacy.consent.ConsentManager$cmpClient$1",
+        "classmethod": "onUIReady",
+        "param":["android.view.View"],
+        "return":"",
+        "label":["cmp"]
+    },
+    {
+        "classname": "crc6476d5cdf1ebcabb54.QuantcastDroidUserConsentService_ChoiceCmpDroidDelegateWrapper",
+        "classmethod": "onCmpUIShown",
+        "param":["com.quantcast.choicemobile.model.PingReturn"],
+        "return":"" ,
+        "label":["cmp"]
+    }
+]

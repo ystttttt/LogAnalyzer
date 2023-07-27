@@ -1,0 +1,32 @@
+class Config():
+    def __init__(self):
+        self.output_dir = './Model/model_output'                                                            
+        self.bert_path = './Model/configuration/classifier'                                     
+        self.vocab_file = './Model/configuration/classifier/vocab.txt'                                                                                                     
+        self.num_classes = 2                                                                               
+        self.max_seq_length = 64
+        self.devpath =  './Model/dataset/'                                                       
+        self.trainpath = './Model/dataset/'                                                     
+        self.testpath = './Model/dataset/'  
+        self.testoutputpath = './Model/dataset/'          
+        self.per_gpu_train_batch_size = 32 
+        self.n_gpu = 1
+        self.local_rank = -1
+        self.eval_batch_size  = 32 #12
+        self.gradient_accumulation_steps = 1
+        # epoch = [2,3,4]
+        self.num_train_epochs = 5
+        self.warm_up_ratio = 0.05
+        # lr = [5e-5,3e-5,2e-5]
+        self.learning_rate = 2e-5
+        self.no_cuda = True
+        self.logging_steps = 64
+        self.save_steps = 64
+        # batch_size = [16,32]
+        self.train_batch_size = 0
+        # dtype = ["train"","test","dev"]
+        self.dtype = 'test'
+        # self.device = 'cuda'
+        self.checkpoint = ''                                        
+        self.do_lower_case = True
+        self.test_batch_size = 32 

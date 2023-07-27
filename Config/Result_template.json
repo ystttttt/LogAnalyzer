@@ -1,0 +1,106 @@
+{
+    "App" : 0,
+    "existence" : {
+        "App_notice": 0,
+        "App_privacy": 0,
+        "App_privacy_no_notice": 0,
+        "collect_when_start": 0,
+        "privacy_collection_behavior": 0,
+        "privacy_collection_behavior_main": {
+            "permission": 0,
+            "personal_information/user_input": 0,
+            "device_information": 0
+        },
+        "privacy_collection_behavior_net": 0,
+        "privacy_collection_behavior_non_existence_Net": 0,
+        "privacy_collection_behavior_non_existence_Net_detail": {},
+        "privacy_collection_behavior_non_existence": 0,
+        "privacy_collection_behavior_non_existence_main": {
+            "permission": 0,
+            "personal_information/user_input": 0,
+            "device_information": 0
+        },
+        "privacy_collection_behavior_non_existence_TP": 0,
+        "privacy_collection_behavior_non_existence_TP_detail": {},
+        "collect_before_notice_type": 0,
+        "collect_before_notice_main": {
+            "permission": 0,
+            "personal_information/user_input": 0,
+            "device_information": 0
+        },
+        "notice_type": 0,
+        "notice_type_main": {
+            "permission": 0,
+            "personal_information/user_input": 0,
+            "device_information": 0
+        },
+        "cmp_app":0,
+        "cmp": {},
+        "privacy_collection_data_type": {},
+        "non_existence_data_type": {},
+        "overall_app_coverage": 0.0,
+        "overall_behavior_coverage": 0.0,
+        "collect_before_notice_app" : 0,
+        "collect_before_notice_type_coverage" : 0.0,
+        "TP_network_behavior_coverage": 0.0,
+        "TP_network_flow_coverage": 0.0,
+        "data_type_coverage": {},
+        "TP_data_type_coverage": {}
+    },
+    "quality" : { 
+        "total":0, 
+        "valued":0,
+        "Purpose":0,
+        "Right":0,
+        "Right_app":0,
+        "Identity":0,
+        "Identity_app":0,
+        "Receiver":0,
+        "Legal_basis":0,
+        "Storage":0,
+        "data":0,
+        "onlydata":0,
+        "data_purpose":0,
+        "one_element":0,
+        "two_elements":0,
+        "three_elements":0,
+        "four_elements":0,
+        "five_elements":0,
+        "six_elements":0,
+        "seven_elements":0,
+        "click_deny": {
+            "app_num":0,
+            "notice_num":0,
+            "userinput_all":0,
+            "userinput_positive":0,
+            "permission_all":0,
+            "permission_positive":0,
+            "device_all":0,
+            "device_positive":0
+        }
+    },
+    "vague" : {
+        "app_num":0,
+        "notice_num":0,
+        "datatype_vagueness": {
+            "app":0,
+            "notice":0,
+            "detail": {}
+        },
+        "Identity_vagueness": {
+            "app":0,
+            "notice":0,
+            "detail":"None"
+        },
+        "Receiver_vagueness": {
+            "app":0,
+            "notice":0,
+            "detail":"None"
+        },
+        "Purpose_vagueness": {
+            "app":0,
+            "notice":0,
+            "detail":"None"
+        }
+    }
+}
