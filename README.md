@@ -18,5 +18,5 @@ LogAnalyzer is a tool that can analyze the compliance of the app runtime privacy
 ## How to use
 `LogAnalyze.py` is the main file and `AnalysisConfig.py` is the main configuration file.
 - When you use this tool, please modify LogPaths, Outputpath and ErrorLogpath in `AnalysisConfig.py` to the corresponding path in your environment.
-  Note that LogPaths can be multiple and LogPaths should be consistent with the Outputpath in [AppAutoRuner](https://github.com/ystttttt/AppAutoRunner)
+  Note that LogPaths can be multiple and LogPaths should be consistent with the Outputpath in [AppAutoRuner](https://github.com/ystttttt/AppAutoRunner).
 - Our final models are not included in the repository. Please download models from [Final model](https://drive.google.com/drive/folders/1xS8w0RRhsK4I72KTqTE7n8rJTUUwnLms?usp=sharing) and place them in the `Model/final_model` directory. 
