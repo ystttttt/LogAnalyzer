@@ -23,8 +23,6 @@ def count(pkg, dir):
         "privacy_type_collected" : {},
         "network_all" : 0,
         "non_existence_all" : {},
-        "non_existence_network" : {},
-        "non_existence_third_party": {},
         "collect_before_notice": {},
         "CMP" : False,
         "CMP_class" : []
@@ -63,14 +61,6 @@ def count(pkg, dir):
                 dict_add(Output["non_existence_all"],type)
                 non_existence_overall_count += 1
 
-                if l["key"] == "network":
-                    dict_add(Output["non_existence_network"],type)
-                    non_existence_network_count += 1
-
-                    if l["third_party"] != "None":
-                        dict_add(Output["non_existence_third_party"],type)
-                        non_existence_third_party_count += 1
-
             if l["collect_before_notice"] == True:
                 dict_add(Output["collect_before_notice"],type)
                 collect_before_notice += 1
@@ -84,8 +74,6 @@ def count(pkg, dir):
         
         Output["privacy_type_collected"]["sum"] = collection_count
         Output["non_existence_all"]["sum"] = non_existence_overall_count
-        Output["non_existence_network"]["sum"] = non_existence_network_count
-        Output["non_existence_third_party"]["sum"] = non_existence_third_party_count
         Output["collect_before_notice"]["sum"] = collect_before_notice
         Output["network_all"] = network_count
         Output["CMP_class"] = list(set(Output["CMP_class"]))

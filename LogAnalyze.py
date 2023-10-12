@@ -9,211 +9,127 @@ import ThirdPartyCount
 import SingleAppCount
 import shutil
 
-def checkInfo():
-    print(AnalysisConfig.ApiInfo)
-    print(AnalysisConfig.LogList)
-    AnalysisConfig.Ontology.show()
+TPCount = None
 
-
-def countFinal(OPT):
-    VagueClassifier.init()
-    TPCount = ThirdPartyCount.ThirdPartyLog()
-
-    with open(AnalysisConfig.Template,'r',encoding='UTF-8')as f:
-        Result = json.loads(f.read())
-
-    for package in AnalysisConfig.LogList.keys():
-        print(package)
-        app_dir = AnalysisConfig.LogList[package]
-        OutPutPath = os.path.join(AnalysisConfig.OutPut,package)
-
-        Vague_Notice_label = set()
-        Vague_type = False
-        Vague_identity = False
-        Vague_receiver = False
-        Vague_purpose = False
-
-        Collect_Before_Notice = set()
-        NoticeTime = []
-
-        if os.path.exists(OutPutPath):
-            Result["App"] += 1
-
-            states_dir = os.path.join(app_dir,"states")
-            PrivacyLog_path = os.path.join(AnalysisConfig.OutPut,package,"PrivacyLog.json")
-            AppCount_Path = os.path.join(AnalysisConfig.OutPut,package,"AppCount.json")
-            NERfinal_path = os.path.join(AnalysisConfig.OutPut,package,"NER_final.json")
-            pagefinal_path = os.path.join(AnalysisConfig.OutPut,package,"page_final.json")
-            clickdeny_final_path = os.path.join(AnalysisConfig.OutPut,package,"clickdeny_final.json")
-            VagueType_path = os.path.join(AnalysisConfig.OutPut,package,"VagueDataType.json")
-
-            if os.path.exists(AppCount_Path):
-                with open(AppCount_Path,'r',encoding='UTF-8')as f:
-                    count = json.loads(f.read())
-                    if count["privacy_type_collected"]["sum"]!=0: Result["existence"]["App_privacy"] +=1
-
-                    if count["Existence"]==True : Result["existence"]["App_privacy_no_notice"] +=1
-                    if count["collect_when_start"]!=0 : Result["existence"]["collect_when_start"] +=1
-
-                    Result["existence"]["privacy_collection_behavior"] += count["privacy_type_collected"]["sum"]
-                    Result["existence"]["privacy_collection_behavior_non_existence"] += count["non_existence_all"]["sum"]
-                    Result["existence"]["privacy_collection_behavior_non_existence_Net"] += count["non_existence_network"]["sum"]
-                    Result["existence"]["privacy_collection_behavior_non_existence_TP"] += count["non_existence_third_party"]["sum"]
-                    Result["existence"]["privacy_collection_behavior_net"] += count["network_all"]
-                    if len(count["collect_before_notice"].keys()) > 1:
-                        Result["existence"]["collect_before_notice_app"] += 1
-
-                        for type in count["collect_before_notice"].keys():
-                            if type == "sum" or type == "cmp" : continue
-                            Collect_Before_Notice.add(type)
-
-                    if len(count["non_existence_network"].keys()) > 1:
-                        for type in count["non_existence_network"].keys():
-                            if type == "sum" or type == "cmp" : continue
-                            if type in Result["existence"]["privacy_collection_behavior_non_existence_Net_detail"].keys():  Result["existence"]["privacy_collection_behavior_non_existence_Net_detail"][type] += 1
-                            else: Result["existence"]["privacy_collection_behavior_non_existence_Net_detail"][type] = 1
+def get_Existence(Overall,Existence_Gap,CollectBeforeNotice,logPath):
+    if os.path.exists(logPath):
+        with open(logPath,'r',encoding='UTF-8')as f:
+            count = json.loads(f.read())
+        
+        if count["privacy_type_collected"]["sum"]!=0: Overall["App_w_privacy_collection_behavior"] +=1
+        if count["Existence"]==True : Existence_Gap["App_w_ExistenceGap"] +=1
                     
-                    if len(count["non_existence_third_party"].keys()) > 1:
-                        for type in count["non_existence_third_party"].keys():
-                            if type == "sum" or type == "cmp" : continue
-                            if type in Result["existence"]["privacy_collection_behavior_non_existence_TP_detail"].keys():  Result["existence"]["privacy_collection_behavior_non_existence_TP_detail"][type] += 1
-                            else: Result["existence"]["privacy_collection_behavior_non_existence_TP_detail"][type] = 1
+        Overall["privacy_collection_behavior"] += count["privacy_type_collected"]["sum"]
+        Existence_Gap["privacy_collection_behavior_w/o_RPN"] += count["non_existence_all"]["sum"]
+                    
+        if len(count["collect_before_notice"].keys()) > 1:
+            CollectBeforeNotice["App_w_collect_before_notice"] += 1
 
-                    if count["CMP"] : 
-                        Result["existence"]["cmp_app"] += 1
-                        for cl in count["CMP_class"]:
-                            if cl in Result["existence"]["cmp"].keys():  Result["existence"]["cmp"][cl] += 1
-                            else: Result["existence"]["cmp"][cl] = 1
+            for type in count["collect_before_notice"].keys():
+                if type == "sum" or type == "cmp" : continue
+                if type in CollectBeforeNotice["collect_before_notice_detail_category"].keys():
+                    CollectBeforeNotice["collect_before_notice_detail_category"][type] += count["privacy_type_collected"][type]
+                else: CollectBeforeNotice["collect_before_notice_detail_category"][type] = count["privacy_type_collected"][type]
 
-                    for type in count["privacy_type_collected"].keys():
-                        if type == "sum" or type == "cmp" : continue
-                        if type in Result["existence"]["privacy_collection_data_type"].keys():
-                            Result["existence"]["privacy_collection_data_type"][type] += count["privacy_type_collected"][type]
-                        else: Result["existence"]["privacy_collection_data_type"][type] = count["privacy_type_collected"][type]
+        for type in count["privacy_type_collected"].keys():
+            if type == "sum" or type == "cmp" : continue
+            if type in Overall["privacy_collection_behavior_detail_category"].keys():
+                Overall["privacy_collection_behavior_detail_category"][type] += count["privacy_type_collected"][type]
+            else: Overall["privacy_collection_behavior_detail_category"][type] = count["privacy_type_collected"][type]
 
-                    for type in count["non_existence_all"].keys():
-                        if type == "sum" or type == "cmp": continue
-                        if type in Result["existence"]["non_existence_data_type"].keys():
-                            Result["existence"]["non_existence_data_type"][type] += count["non_existence_all"][type]
-                        else: Result["existence"]["non_existence_data_type"][type] = count["non_existence_all"][type]
-            
-            if os.path.exists(PrivacyLog_path):
-                TPCount.app_init()
-                with open(PrivacyLog_path,'r') as f:
-                    Log = json.load(f)
+        for type in count["non_existence_all"].keys():
+            if type == "sum" or type == "cmp": continue
+            if type in Overall["privacy_collection_behavior_w/o_RPN_detail_category"].keys():
+                Overall["privacy_collection_behavior_w/o_RPN_detail_category"][type] += count["non_existence_all"][type]
+            else: Overall["privacy_collection_behavior_w/o_RPN_detail_category"][type] = count["non_existence_all"][type]
 
-                    for key,log in Log.items():
-                        if key.find("network") != -1:
-                            if log["third_party"] != "None": TPCount.add(log["timestamp"],log["third_party"],log["data_type"],log["notice"])
-                            else: TPCount.add_flow(log["timestamp"])
+def get_Quality_Element(Overall,QP_Element,logPath,logPath2,VagueLabel,Vague_Notice_label):
+    if os.path.exists(logPath):
+        Overall["App_w_RPN"] += 1
+        with open(logPath2, 'r', encoding='UTF-8')as json_file:
+            page_dict = json.loads(json_file.read())
+
+        original_right = QP_Element["Elements_in_RPN"]["Right"]
+        original_identity = QP_Element["Elements_in_RPN"]["Identity"]
+
+        for key,value in page_dict.items():
+            if not process_clickdeny.check_ifgrantpermission(os.path.join(states_dir,"state_"+key+".txt")):
+                key_list = list(value["predict"].keys())
+                key_list.sort()
+                element_num = len(key_list)
+                if element_num == 1 and (key_list[0]=="data" or key_list[0]=="Identity"):
+                    continue
+
+                QP_Element["RPN"] += 1
+                if element_num == 1:
+                    QP_Element["RPN_w_specific_number_of_elements"]["one_element"]+=1
+                elif element_num == 2:
+                    QP_Element["RPN_w_specific_number_of_elements"]["two_elements"]+=1
+                elif element_num == 3:
+                    QP_Element["RPN_w_specific_number_of_elements"]["three_elements"]+=1
+                elif element_num == 4:
+                    QP_Element["RPN_w_specific_number_of_elements"]["four_elements"]+=1
+                elif element_num == 5:
+                    QP_Element["RPN_w_specific_number_of_elements"]["five_elements"]+=1
+                elif element_num == 6:
+                    QP_Element["RPN_w_specific_number_of_elements"]["six_elements"]+=1
+                elif element_num == 7:
+                    QP_Element["RPN_w_specific_number_of_elements"]["seven_elements"]+=1
+                        
+                if "data" in key_list:
+                    for label in key_list:
+                        QP_Element["Elements_in_RPN"][label]+=1
+                        if label == "Identity":
+                            if(VagueClassifier.classify_Identity(value["predict"][label])):
+                                VagueLabel["Vague_identity"] = True
+                                Vague_Notice_label.add(key)
+                        elif label == "Receiver":
+                            if(VagueClassifier.classify_Receiver(value["predict"][label])):
+                                VagueLabel["Vague_receiver"] = True
+                                Vague_Notice_label.add(key)
+                        elif label == "Purpose":
+                            if(VagueClassifier.classify_Purpose(value["predict"][label])):
+                                VagueLabel["Vague_purpose"] = True
+                                Vague_Notice_label.add(key)
+                
+                if original_right < QP_Element["Elements_in_RPN"]["Right"]:
+                    QP_Element["Elements_in_RPN"]["App_w_Right"] += 1
+                if original_identity < QP_Element["Elements_in_RPN"]["Identity"]:
+                    QP_Element["Elements_in_RPN"]["App_w_Identity"] += 1
+
+def get_Quality_Vague(QP_Vague,logPath,VagueLabel,Vague_Notice_label):
+    if os.path.exists(logPath):
+        VagueLabel["Vague_type"] = True
+        QP_Vague["data_type_vague_expression"]["app"] +=1
+
+        with open(logPath, 'r', encoding='UTF-8')as f:
+            vagueType_dict = json.loads(f.read())
         
-            
+        for key,value in vagueType_dict.items():
+            Vague_Notice_label.add(key.split("++++++++++")[0])
+            QP_Vague["data_type_vague_expression"]["notice"] +=1
+            for label in value:
+                if label in QP_Vague["data_type_vague_expression"]["detail"].keys():
+                    QP_Vague["data_type_vague_expression"]["detail"][label]+=1
+                else: QP_Vague["data_type_vague_expression"]["detail"][label] = 1
+    
+    if(VagueLabel["Vague_identity"]): QP_Vague["identity_vague_expression"]["app"]["app"] +=1
+    if(VagueLabel["Vague_receiver"]): QP_Vague["receiver_vague_expression"]["app"] +=1
+    if(VagueLabel["Vague_purpose"]): QP_Vague["purpose_vague_expression"]["app"] +=1
 
-            
-            if os.path.exists(VagueType_path):
-                Vague_type = True
-                Result["vague"]["datatype_vagueness"]["app"] +=1
-                with open(VagueType_path, 'r', encoding='UTF-8')as f:
-                    vagueType_dict = json.loads(f.read())
-                    for key,value in vagueType_dict.items():
-                        Vague_Notice_label.add(key.split("++++++++++")[0])
-                        Result["vague"]["datatype_vagueness"]["notice"] +=1
-                        for label in value:
-                            if label in Result["vague"]["datatype_vagueness"]["detail"].keys():
-                                Result["vague"]["datatype_vagueness"]["detail"][label]+=1
-                            else: Result["vague"]["datatype_vagueness"]["detail"][label] = 1
+    if(VagueLabel["Vague_type"]|VagueLabel["Vague_identity"]|VagueLabel["Vague_receiver"]|VagueLabel["Vague_purpose"]):  
+        QP_Vague["App_w_RPN_using_vague_expression"] +=1
+        QP_Vague["RPN_using_vague_expression"] += len(Vague_Notice_label)
 
-        
-            if os.path.exists(NERfinal_path):
-                Result["existence"]["App_notice"] += 1
-                with open(pagefinal_path, 'r', encoding='UTF-8')as json_file:
-                    page_dict = json.loads(json_file.read())
+def get_Quality_RPN_after_denying_request(QP_RPN_after_denying_request,logPath):
+    if os.path.exists(logPath):
+        with open(logPath, 'r', encoding='UTF-8')as f:
+            clickdeny_dict = json.loads(f.read())
 
-                notice_type = []
-                original_right = Result["quality"]["Right"]
-                original_identity = Result["quality"]["Identity"]
-                for key, value in page_dict.items():
-                    Result["quality"]["total"]+=1
-                    if not process_clickdeny.check_ifgrantpermission(os.path.join(states_dir,"state_"+key+".txt")):
-                        key_list = list(value["predict"].keys())
-                        key_list.sort()
-                        element_num = len(key_list)
-                        if element_num == 1 and (key_list[0]=="data" or key_list[0]=="Identity"):
-                            continue
-                        Result["quality"]["valued"]+=1
-                        if element_num == 1:
-                            Result["quality"]["one_element"]+=1
-                        elif element_num == 2:
-                            Result["quality"]["two_elements"]+=1
-                        elif element_num == 3:
-                            Result["quality"]["three_elements"]+=1
-                        elif element_num == 4:
-                            Result["quality"]["four_elements"]+=1
-                        elif element_num == 5:
-                            Result["quality"]["five_elements"]+=1
-                        elif element_num == 6:
-                            Result["quality"]["six_elements"]+=1
-                        elif element_num == 7:
-                            Result["quality"]["seven_elements"]+=1
-                        if "data" in key_list:
-                            lista = ["Purpose","Right","Legal_basis","Receiver","Storage"]
-                            flag = 0
-                            flag_p = 0
-                            for a in lista:
-                                if a in key_list :
-                                    if a == "Purpose": flag_p = 1
-                                    else: flag = 1            
-                            if flag == 0 and flag_p == 0:
-                                Result["quality"]["onlydata"]+=1
-                            elif flag == 0 and flag_p == 1:
-                                Result["quality"]["data_purpose"]+=1
-                        for label in key_list:
-                            Result["quality"][label]+=1
-                            if label == "Identity":
-                                if(VagueClassifier.classify_Identity(value["predict"][label])):
-                                    Vague_identity = True
-                                    Vague_Notice_label.add(key)
-                            elif label == "Receiver":
-                                if(VagueClassifier.classify_Receiver(value["predict"][label])):
-                                    Vague_receiver = True
-                                    Vague_Notice_label.add(key)
-                            elif label == "Purpose":
-                                if(VagueClassifier.classify_Purpose(value["predict"][label])):
-                                    Vague_purpose = True
-                                    Vague_Notice_label.add(key)
-                        if "data_type" in value.keys():
-                            notice_type.extend(value["data_type"])
-                if original_right < Result["quality"]["Right"]:
-                    Result["quality"]["Right_app"] += 1
-                if original_identity < Result["quality"]["Identity"]:
-                    Result["quality"]["Identity_app"] += 1
-
-                notice_type = list(set(notice_type))
-                Result["existence"]["notice_type"] += len(notice_type)
-                for type in notice_type:
-                    CBN = False
-                    for t in Collect_Before_Notice:
-                        if AnalysisConfig.Ontology.is_ancestor(type,t) or type == t:
-                            Result["existence"]["collect_before_notice_type"] += 1
-                            CBN = True
-                            break
-                    if AnalysisConfig.Ontology.is_ancestor("device_information",type) or type == "device_information":
-                        Result["existence"]["notice_type_main"]["device_information"] += 1
-                        if CBN : Result["existence"]["collect_before_notice_main"]["device_information"] += 1
-                    elif AnalysisConfig.Ontology.is_ancestor("personal_information",type) or type == "personal_information":
-                        Result["existence"]["notice_type_main"]["personal_information/user_input"] += 1
-                        if CBN : Result["existence"]["collect_before_notice_main"]["personal_information/user_input"] += 1
-                    elif AnalysisConfig.Ontology.is_ancestor("permission",type) or type == "permission":
-                        Result["existence"]["notice_type_main"]["permission"] += 1
-                        if CBN : Result["existence"]["collect_before_notice_main"]["permission"] += 1
-                            
-            if os.path.exists(clickdeny_final_path):
-                with open(clickdeny_final_path, 'r', encoding='UTF-8')as f:
-                    clickdeny_dict = json.loads(f.read())
-                if len(clickdeny_dict)!=0:
-                    original_num = Result["quality"]["click_deny"]["notice_num"]
-                    for key,value in clickdeny_dict.items():
-                        if value["start_timestamp"] in NoticeTime: 
+        if len(clickdeny_dict)!=0:
+            original_num = Result["quality"]["click_deny"]["notice_num"]
+            for key,value in clickdeny_dict.items():
+                if value["start_timestamp"] in NoticeTime: 
                             if not process_clickdeny.check_ifgrantpermission(os.path.join(states_dir,"state_"+value["start_timestamp"]+".txt")):
                                 continue
                         userinput_all = 0
@@ -248,14 +164,60 @@ def countFinal(OPT):
                         Result["quality"]["click_deny"]["device_positive"]+=device_positive
                                 
                     if original_num < Result["quality"]["click_deny"]["notice_num"]:
-                        Result["quality"]["click_deny"]["app_num"]+=1        
+                        Result["quality"]["click_deny"]["app_num"]+=1
 
-        if(Vague_identity): Result["vague"]["Identity_vagueness"]["app"] +=1
-        if(Vague_receiver): Result["vague"]["Receiver_vagueness"]["app"] +=1
-        if(Vague_purpose): Result["vague"]["Purpose_vagueness"]["app"] +=1
 
-        if(Vague_type|Vague_identity|Vague_receiver|Vague_purpose):  Result["vague"]["app_num"] +=1
-        Result["vague"]["notice_num"] += len(Vague_Notice_label)
+def getTP(logPath):
+    if os.path.exists(logPath):
+        TPCount.app_init()
+    with open(logPath,'r') as f:
+        Log = json.load(f)
+    for key,log in Log.items():
+        if key.find("network") != -1:
+            if log["third_party"] != "None": TPCount.add(log["timestamp"],log["third_party"],log["data_type"],log["notice"])
+            else: TPCount.add_flow(log["timestamp"])
+
+def countFinal(OPT):
+    VagueClassifier.init()
+    global TPCount
+    TPCount = ThirdPartyCount.ThirdPartyLog()
+
+    with open(AnalysisConfig.Template,'r',encoding='UTF-8')as f:
+        Result = json.loads(f.read())
+
+    for package in AnalysisConfig.LogList.keys():
+        print(package)
+        app_dir = AnalysisConfig.LogList[package]
+        OutPutPath = os.path.join(AnalysisConfig.OutPut,package)
+
+        Vague_Notice_label = set()
+        VagueLabel = {
+            "Vague_type": False,
+            "Vague_identity": False,
+            "Vague_receiver": False,
+            "Vague_purpose": False
+        }
+        
+        NoticeTime = []
+
+        if os.path.exists(OutPutPath):
+            Result["Tested_App"] += 1
+
+            global states_dir
+            states_dir = os.path.join(app_dir,"states")
+
+            PrivacyLog_path = os.path.join(AnalysisConfig.OutPut,package,"PrivacyLog.json")
+            AppCount_Path = os.path.join(AnalysisConfig.OutPut,package,"AppCount.json")
+            NERfinal_path = os.path.join(AnalysisConfig.OutPut,package,"NER_final.json")
+            pagefinal_path = os.path.join(AnalysisConfig.OutPut,package,"page_final.json")
+            clickdeny_final_path = os.path.join(AnalysisConfig.OutPut,package,"clickdeny_final.json")
+            VagueType_path = os.path.join(AnalysisConfig.OutPut,package,"VagueDataType.json")
+
+            get_Existence(Result["Overall"],Result["Existence_Gap"],Result["Existence_Gap_collect_before_notice"],AppCount_Path)
+            get_Quality_Element(Result["Overall"],Result["Quality_Gap_Element"],NERfinal_path,pagefinal_path,VagueLabel,Vague_Notice_label)
+            get_Quality_Vague(Result["Quality_Gap_Vague_expression"],VagueType_path,VagueLabel,Vague_Notice_label)
+            get_Quality_RPN_after_denying_request(Result["Quality_Gap_RPN_after_denying_request"],clickdeny_final_path)
+            getTP(PrivacyLog_path)        
 
 
     Result["vague"]["Identity_vagueness"]["notice"] = VagueClassifier.Vague_Identity_Notice_Count

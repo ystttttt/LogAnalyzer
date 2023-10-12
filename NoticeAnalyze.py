@@ -230,9 +230,6 @@ def readjson_for_shortsentence(notice_output_path,element_input_path,element_tim
                 with open(filename.replace(".json",".txt"), 'r', encoding='UTF-8')as txt_file:
                     lines = [line.strip() for line in txt_file.readlines() if line.strip()]
                 for line in lines:
-                    if "state_2023-04-17_130331" in filename:
-                        print(line)
-                        print(len(line))
                     if line.split("++++++++++")[0] != "null": 
                         with open(element_input_path, 'a', encoding='utf-8') as f:
                             f.write(line.split("++++++++++")[0] + "\n")
@@ -305,8 +302,6 @@ def process_states(pkg,input_dir):
                 lines = [line.strip() for line in f.readlines() if line.strip()]
             for index,line in enumerate(lines):
                 if line.split(',')[1] == "0":
-                    print(line)
-                    print(index)
                     lines_index.add(index)
         # Write a sentence with one of the six elements and its timestamp into the file
         with open(element_output_path, 'r', encoding='utf-8') as f:
@@ -340,8 +335,8 @@ def process_states(pkg,input_dir):
             testloader = dataloader(dtype='NERclassifier', config=NERconfig, classifier_path = NER_input_path)
             testdata, testTexts, tokens = testloader.load_NERdata()
             NERtest(NERconfig, model, testdata, testTexts, tokens, output_path = NER_output_path)
-            
-            build_finaloutput(NER_output_path,NER_timestamp_path,data_output_path)
+    if (not os.path.exists(data_output_path)) and os.path.exists(NER_timestamp_path) and os.path.exists(NER_output_path):       
+        build_finaloutput(NER_output_path,NER_timestamp_path,data_output_path)
     if (not os.path.exists(page_output_path)) and os.path.exists(data_output_path):
         build_pageoutput(data_output_path, page_output_path)
 

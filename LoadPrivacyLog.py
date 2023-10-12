@@ -78,7 +78,7 @@ def ApiLogAnalyze(pkg,dir):
 def LoadPrivacyLogs(pkg,dir):
     networkLog = os.path.join(AnalysisConfig.OutPut,pkg,"network.json")
     apiLog = os.path.join(AnalysisConfig.OutPut,pkg,"ApiHook.json")
-    noticeLog = os.path.join(AnalysisConfig.OutPut,"NER_final.json")
+    noticeLog = os.path.join(AnalysisConfig.OutPut,"page_final.json")
     TimeCheck = True
     TimeZoneOffset = 0
 
@@ -162,7 +162,7 @@ def ExistenceCheck(pkg,dir):
     Log = None
 
     try:
-        with open(os.path.join(AnalysisConfig.OutPut,pkg,"NER_final.json"),'r') as f:
+        with open(os.path.join(AnalysisConfig.OutPut,pkg,"page_final.json"),'r') as f:
             Log = json.load(f)
     except FileNotFoundError:
         # AnalysisConfig.LogError(pkg,"notice not found!")

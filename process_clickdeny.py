@@ -12,28 +12,40 @@ def match_privacykeywords(data):
         load_dict = loads(json_file.read())
     key_list = set()
     add_flag = 0
+    address_list = ["email address","ip address","e-mail address"]
+    single_words = ['the','such','any','your','my','this','be','if','these','a','so','their', 'is', 'are', 'that']
     data = data.lower()
+    data_list = data.split(" ")
+    for i in range(len(data_list) - 1, -1, -1):
+        if data_list[i] in single_words:
+            del data_list[i]
+    data = " ".join(data_list)
     for key, keywords in load_dict.items():
         for keyword in keywords:
-            keyword = keyword.lower()
+            keyword = keyword.lower().replace("_"," ")
             if data.find(keyword) != -1:
                 start = data.find(keyword)
                 end = start + len(keyword)
                 if start == 0:
                     if end>=len(data):
-                        add_flag = 1
+                        add_flag += 1
                     elif data[end]==' ':
-                        add_flag = 1
+                        add_flag += 1
                 elif data[start-1]==' ':
                     if end>=len(data):
-                        add_flag = 1
+                        add_flag += 1
                     elif data[end]==' ':
-                        add_flag = 1
+                        add_flag += 1
+                if key == "address" and keyword == "address":
+                    for address_keyword in address_list:
+                        if (address_start := data.find(address_keyword)) != -1:
+                            address_end = address_start + len(address_keyword)
+                            if address_end == end:
+                                add_flag -= 1
         if add_flag:
             for al_key in key_list:
                 if AnalysisConfig.Ontology.is_ancestor(al_key,key):
                     key_list.remove(al_key)
-                    add_flag = 0
                     break
                 elif AnalysisConfig.Ontology.is_ancestor(key,al_key):
                     add_flag = 0
@@ -41,6 +53,8 @@ def match_privacykeywords(data):
         if add_flag:
             key_list.add(key)
             add_flag = 0
+    if "location" in key_list and "general_location" not in key_list:
+        key_list.add("general_location")
     return key_list
 
 def check_ifgrantpermission(txt_file):
