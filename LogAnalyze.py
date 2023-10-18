@@ -45,9 +45,9 @@ def get_Existence(Overall,Existence_Gap,CollectBeforeNotice,logPath):
 
         for type in count["non_existence_all"].keys():
             if type == "sum" or type == "cmp": continue
-            if type in Overall["privacy_collection_behavior_w/o_RPN_detail_category"].keys():
-                Overall["privacy_collection_behavior_w/o_RPN_detail_category"][type] += count["non_existence_all"][type]
-            else: Overall["privacy_collection_behavior_w/o_RPN_detail_category"][type] = count["non_existence_all"][type]
+            if type in Existence_Gap["privacy_collection_behavior_w/o_RPN_detail_category"].keys():
+                Existence_Gap["privacy_collection_behavior_w/o_RPN_detail_category"][type] += count["non_existence_all"][type]
+            else: Existence_Gap["privacy_collection_behavior_w/o_RPN_detail_category"][type] = count["non_existence_all"][type]
 
 def get_Quality_Element(Overall,QP_Element,logPath,logPath2,VagueLabel,Vague_Notice_label):
     if os.path.exists(logPath):
@@ -58,12 +58,10 @@ def get_Quality_Element(Overall,QP_Element,logPath,logPath2,VagueLabel,Vague_Not
         original_right = QP_Element["Elements_in_RPN"]["Right"]
         original_identity = QP_Element["Elements_in_RPN"]["Identity"]
 
-        notice_type = set()
+        notice_type = []
         global NoticeTime
         NoticeTime = []
         for key,value in page_dict.items():
-            timestamp = key.split("++++++++++")[0]
-            NoticeTime.append(timestamp)
             if not process_clickdeny.check_ifgrantpermission(os.path.join(states_dir,"state_"+key+".txt")):
                 key_list = list(value["predict"].keys())
                 key_list.sort()
@@ -71,6 +69,8 @@ def get_Quality_Element(Overall,QP_Element,logPath,logPath2,VagueLabel,Vague_Not
                 if element_num == 1 and (key_list[0]=="data" or key_list[0]=="Identity"):
                     continue
 
+                timestamp = key.split("++++++++++")[0]
+                NoticeTime.append(timestamp)
                 QP_Element["RPN"] += 1
                 if element_num == 1:
                     QP_Element["RPN_w_specific_number_of_elements"]["one_element"]+=1

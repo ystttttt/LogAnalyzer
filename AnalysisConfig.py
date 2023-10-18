@@ -8,11 +8,11 @@ privacy_keyword_path = "Config/2nd_privacy2keyword.json"
 Template = "Config/Result_template.json"
 
 # AppAutoRun output path
-LogPaths = ["/media/npc/16E22B97E22B7A5F/batch3/","/media/npc/16E22B97E22B7A5F/batch2/","/media/npc/16E22B97E22B7A5F/batch1/"]
+LogPaths = [""]
 # Analysis output path
-OutPut = "/media/npc/16E22B97E22B7A5F/Output-all/"
+OutPut = ""
 # LogFile
-ErrorLogPath = "/media/npc/16E22B97E22B7A5F/LogAnalyzeErrorLog.txt"
+ErrorLogPath = "LogAnalyzeErrorLog.txt"
 
 def LogError(pkg,str):
     with open(ErrorLogPath,"+a") as f:
