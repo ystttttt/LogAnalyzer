@@ -10,6 +10,11 @@ import SingleAppCount
 import shutil
 
 TPCount = None
+Notice_Type_Count = 0
+Notice_Type_CBN_Count = 0
+
+App_Collect_Before_Notice = None
+NoticeTime = None
 
 def get_Existence(Overall,Existence_Gap,CollectBeforeNotice,logPath):
     if os.path.exists(logPath):
@@ -21,16 +26,17 @@ def get_Existence(Overall,Existence_Gap,CollectBeforeNotice,logPath):
                     
         Overall["privacy_collection_behavior"] += count["privacy_type_collected"]["sum"]
         Existence_Gap["privacy_collection_behavior_w/o_RPN"] += count["non_existence_all"]["sum"]
+
+        global App_Collect_Before_Notice
+        App_Collect_Before_Notice = set()
                     
         if len(count["collect_before_notice"].keys()) > 1:
             CollectBeforeNotice["App_w_collect_before_notice"] += 1
-
+            
             for type in count["collect_before_notice"].keys():
                 if type == "sum" or type == "cmp" : continue
-                if type in CollectBeforeNotice["collect_before_notice_detail_category"].keys():
-                    CollectBeforeNotice["collect_before_notice_detail_category"][type] += count["privacy_type_collected"][type]
-                else: CollectBeforeNotice["collect_before_notice_detail_category"][type] = count["privacy_type_collected"][type]
-
+                App_Collect_Before_Notice.add(type)
+                
         for type in count["privacy_type_collected"].keys():
             if type == "sum" or type == "cmp" : continue
             if type in Overall["privacy_collection_behavior_detail_category"].keys():
@@ -52,7 +58,12 @@ def get_Quality_Element(Overall,QP_Element,logPath,logPath2,VagueLabel,Vague_Not
         original_right = QP_Element["Elements_in_RPN"]["Right"]
         original_identity = QP_Element["Elements_in_RPN"]["Identity"]
 
+        notice_type = set()
+        global NoticeTime
+        NoticeTime = []
         for key,value in page_dict.items():
+            timestamp = key.split("++++++++++")[0]
+            NoticeTime.append(timestamp)
             if not process_clickdeny.check_ifgrantpermission(os.path.join(states_dir,"state_"+key+".txt")):
                 key_list = list(value["predict"].keys())
                 key_list.sort()
@@ -76,26 +87,39 @@ def get_Quality_Element(Overall,QP_Element,logPath,logPath2,VagueLabel,Vague_Not
                 elif element_num == 7:
                     QP_Element["RPN_w_specific_number_of_elements"]["seven_elements"]+=1
                         
-                if "data" in key_list:
-                    for label in key_list:
-                        QP_Element["Elements_in_RPN"][label]+=1
-                        if label == "Identity":
-                            if(VagueClassifier.classify_Identity(value["predict"][label])):
-                                VagueLabel["Vague_identity"] = True
-                                Vague_Notice_label.add(key)
-                        elif label == "Receiver":
-                            if(VagueClassifier.classify_Receiver(value["predict"][label])):
-                                VagueLabel["Vague_receiver"] = True
-                                Vague_Notice_label.add(key)
-                        elif label == "Purpose":
-                            if(VagueClassifier.classify_Purpose(value["predict"][label])):
-                                VagueLabel["Vague_purpose"] = True
-                                Vague_Notice_label.add(key)
+                for label in key_list:
+                    QP_Element["Elements_in_RPN"][label]+=1
+                    if label == "Identity":
+                        if(VagueClassifier.classify_Identity(value["predict"][label])):
+                            VagueLabel["Vague_identity"] = True
+                            Vague_Notice_label.add(key)
+                    elif label == "Receiver":
+                        if(VagueClassifier.classify_Receiver(value["predict"][label])):
+                            VagueLabel["Vague_receiver"] = True
+                            Vague_Notice_label.add(key)
+                    elif label == "Purpose":
+                        if(VagueClassifier.classify_Purpose(value["predict"][label])):
+                            VagueLabel["Vague_purpose"] = True
+                            Vague_Notice_label.add(key)
                 
-                if original_right < QP_Element["Elements_in_RPN"]["Right"]:
-                    QP_Element["Elements_in_RPN"]["App_w_Right"] += 1
-                if original_identity < QP_Element["Elements_in_RPN"]["Identity"]:
-                    QP_Element["Elements_in_RPN"]["App_w_Identity"] += 1
+                if "data_type" in value.keys():
+                    notice_type.extend(value["data_type"])
+                
+        if original_right < QP_Element["Elements_in_RPN"]["Right"]:
+            QP_Element["Elements_in_RPN"]["App_w_Right"] += 1
+        if original_identity < QP_Element["Elements_in_RPN"]["Identity"]:
+            QP_Element["Elements_in_RPN"]["App_w_Identity"] += 1
+        
+        notice_type = list(set(notice_type))
+        for type in notice_type:
+            global Notice_Type_Count
+            Notice_Type_Count += 1
+            for t in App_Collect_Before_Notice:
+                if AnalysisConfig.Ontology.is_ancestor(type,t) or type == t:
+                    global Notice_Type_CBN_Count
+                    Notice_Type_CBN_Count += 1
+                    break
+                    
 
 def get_Quality_Vague(QP_Vague,logPath,VagueLabel,Vague_Notice_label):
     if os.path.exists(logPath):
@@ -113,7 +137,7 @@ def get_Quality_Vague(QP_Vague,logPath,VagueLabel,Vague_Notice_label):
                     QP_Vague["data_type_vague_expression"]["detail"][label]+=1
                 else: QP_Vague["data_type_vague_expression"]["detail"][label] = 1
     
-    if(VagueLabel["Vague_identity"]): QP_Vague["identity_vague_expression"]["app"]["app"] +=1
+    if(VagueLabel["Vague_identity"]): QP_Vague["identity_vague_expression"]["app"] +=1
     if(VagueLabel["Vague_receiver"]): QP_Vague["receiver_vague_expression"]["app"] +=1
     if(VagueLabel["Vague_purpose"]): QP_Vague["purpose_vague_expression"]["app"] +=1
 
@@ -127,44 +151,58 @@ def get_Quality_RPN_after_denying_request(QP_RPN_after_denying_request,logPath):
             clickdeny_dict = json.loads(f.read())
 
         if len(clickdeny_dict)!=0:
-            original_num = Result["quality"]["click_deny"]["notice_num"]
+            original_num = QP_RPN_after_denying_request["RPN_after_denying_request"]
             for key,value in clickdeny_dict.items():
                 if value["start_timestamp"] in NoticeTime: 
-                            if not process_clickdeny.check_ifgrantpermission(os.path.join(states_dir,"state_"+value["start_timestamp"]+".txt")):
-                                continue
-                        userinput_all = 0
-                        permission_all = 0
-                        device_all = 0
-                        userinput_positive = 0
-                        permission_positive = 0
-                        device_positive = 0
-                        start_data_type = value["start_data_type"]
-                        notice_data_type = value["notice_data_type"] 
-                        if len(value["notice_key"]) != 0:
-                            for datatype in notice_data_type:
-                                if (AnalysisConfig.Ontology.is_ancestor("user_input",datatype) or datatype == "user_input") and not AnalysisConfig.Ontology.is_ancestor("user_credentials",datatype):
-                                    userinput_positive=1
-                                elif AnalysisConfig.Ontology.is_ancestor("permission",datatype) or datatype == "permission":
-                                    permission_positive = 1
-                                elif datatype != "general_location" and (AnalysisConfig.Ontology.is_ancestor("device_information",datatype) or datatype == "device_information"):
-                                    device_positive = 1
-                        for datatype in start_data_type:
-                            if AnalysisConfig.Ontology.is_ancestor("user_input",datatype) and not AnalysisConfig.Ontology.is_ancestor("user_credentials",datatype):
-                                userinput_all = 1
-                            elif AnalysisConfig.Ontology.is_ancestor("permission",datatype) or datatype == "permission":
-                                permission_all = 1
-                            elif datatype != "general_location" and (AnalysisConfig.Ontology.is_ancestor("device_information",datatype) or datatype == "device_information"):
-                                device_all = 1
-                        Result["quality"]["click_deny"]["userinput_all"]+=userinput_all
-                        Result["quality"]["click_deny"]["permission_all"]+=permission_all
-                        Result["quality"]["click_deny"]["device_all"]+=device_all
-                        Result["quality"]["click_deny"]["notice_num"]+=(userinput_positive|permission_positive|device_positive)
-                        Result["quality"]["click_deny"]["userinput_positive"]+=userinput_positive
-                        Result["quality"]["click_deny"]["permission_positive"]+=permission_positive
-                        Result["quality"]["click_deny"]["device_positive"]+=device_positive
+                    if not process_clickdeny.check_ifgrantpermission(os.path.join(states_dir,"state_"+value["start_timestamp"]+".txt")):
+                        continue
+                    
+                userinput_all = 0
+                permission_all = 0
+                device_all = 0
+                others_all = 0
+
+                userinput_positive = 0
+                permission_positive = 0
+                device_positive = 0
+                others_positive = 0
+
+                start_data_type = value["start_data_type"]
+                notice_data_type = value["notice_data_type"] 
+                        
+                if len(value["notice_key"]) != 0:
+                    for datatype in notice_data_type:
+                        if (AnalysisConfig.Ontology.is_ancestor("user_input",datatype) or datatype == "user_input") and not AnalysisConfig.Ontology.is_ancestor("user_credentials",datatype):
+                            userinput_positive = 1
+                        elif AnalysisConfig.Ontology.is_ancestor("permission",datatype) or datatype == "permission":
+                            permission_positive = 1
+                        elif datatype != "general_location" and (AnalysisConfig.Ontology.is_ancestor("device_information",datatype) or datatype == "device_information"):
+                            device_positive = 1
+                        elif AnalysisConfig.Ontology.is_ancestor("others",datatype):
+                            others_positive = 1
+
+                for datatype in start_data_type:
+                    if AnalysisConfig.Ontology.is_ancestor("user_input",datatype) and not AnalysisConfig.Ontology.is_ancestor("user_credentials",datatype):
+                        userinput_all = 1
+                    elif AnalysisConfig.Ontology.is_ancestor("permission",datatype) or datatype == "permission":
+                        permission_all = 1
+                    elif datatype != "general_location" and (AnalysisConfig.Ontology.is_ancestor("device_information",datatype) or datatype == "device_information"):
+                        device_all = 1
+                    elif AnalysisConfig.Ontology.is_ancestor("others",datatype):
+                        others_all = 1
+
+                QP_RPN_after_denying_request["Data_type_RPN_after_denying_request_main"]["Denied_requests_userinput"]+=userinput_all
+                QP_RPN_after_denying_request["Data_type_RPN_after_denying_request_main"]["Denied_requests_permission"]+=permission_all
+                QP_RPN_after_denying_request["Data_type_RPN_after_denying_request_main"]["Denied_requests_device_info"]+=device_all
+                QP_RPN_after_denying_request["Data_type_RPN_after_denying_request_main"]["Denied_requests_others"]+=others_all
+                QP_RPN_after_denying_request["RPN_after_denying_request"]+=(userinput_positive|permission_positive|device_positive|others_positive)
+                QP_RPN_after_denying_request["Data_type_RPN_after_denying_request_main"]["RPN_after_denying_request_userinput"]+=userinput_positive
+                QP_RPN_after_denying_request["Data_type_RPN_after_denying_request_main"]["RPN_after_denying_request_permission"]+=permission_positive
+                QP_RPN_after_denying_request["Data_type_RPN_after_denying_request_main"]["RPN_after_denying_request_device_info"]+=device_positive
+                QP_RPN_after_denying_request["Data_type_RPN_after_denying_request_main"]["RPN_after_denying_request_others"]+=others_positive
                                 
-                    if original_num < Result["quality"]["click_deny"]["notice_num"]:
-                        Result["quality"]["click_deny"]["app_num"]+=1
+            if original_num < QP_RPN_after_denying_request["RPN_after_denying_request"]:
+                QP_RPN_after_denying_request["App_w_RPN_after_denying_request"]+=1        
 
 
 def getTP(logPath):
@@ -176,6 +214,41 @@ def getTP(logPath):
         if key.find("network") != -1:
             if log["third_party"] != "None": TPCount.add(log["timestamp"],log["third_party"],log["data_type"],log["notice"])
             else: TPCount.add_flow(log["timestamp"])
+
+def sort(Result):
+    Result["Quality_Gap_Vague_expression"]["identity_vague_expression"]["notice"] = VagueClassifier.Vague_Identity_Notice_Count
+    Result["Quality_Gap_Vague_expression"]["receiver_vague_expression"]["notice"] = VagueClassifier.Vague_Receiver_Notice_Count
+    Result["Quality_Gap_Vague_expression"]["purpose_vague_expression"]["notice"] = VagueClassifier.Vague_Purpose_Notice_Count
+
+    Result["Quality_Gap_Vague_expression"]["identity_vague_expression"]["detail"] = VagueClassifier.Vague_Identity
+    Result["Quality_Gap_Vague_expression"]["receiver_vague_expression"]["detail"] = VagueClassifier.Vague_Receiver
+    Result["Quality_Gap_Vague_expression"]["purpose_vague_expression"]["detail"] = VagueClassifier.Vague_Purpose
+
+    Result["Existence_Gap"]["privacy_collection_behavior_w/o_RPN_ratio"] = float(Result["Existence_Gap"]["privacy_collection_behavior_w/o_RPN"]/Result["Overall"]["privacy_collection_behavior"])
+    Result["Existence_Gap"]["App_w_ExistenceGap_ratio"] = float(Result["Existence_Gap"]["App_w_ExistenceGap"]/Result["Tested_App"])
+    Result["Quality_Gap_collect_before_notice"]["Data_type_RPN_collected_before_notice_ratio"] = float(Notice_Type_CBN_Count/Notice_Type_Count)
+
+    for type in Result["Overall"]["privacy_collection_behavior_detail_category"].keys():
+        sum = Result["Overall"]["privacy_collection_behavior_detail_category"][type]
+
+        if AnalysisConfig.Ontology.is_ancestor("device_information",type) or type == "device_information":
+            Result["Overall"]["privacy_collection_behavior_main_category"]["device_information"] += Result["Overall"]["privacy_collection_behavior_detail_category"][type]
+        elif AnalysisConfig.Ontology.is_ancestor("personal_information",type) or type == "user_input":
+            Result["Overall"]["privacy_collection_behavior_main_category"]["user_input"] += Result["Overall"]["privacy_collection_behavior_detail_category"][type]
+        elif AnalysisConfig.Ontology.is_ancestor("permission",type) or type == "permission":
+            Result["Overall"]["privacy_collection_behavior_main_category"]["permission"] += Result["Overall"]["privacy_collection_behavior_detail_category"][type]
+        elif AnalysisConfig.Ontology.is_ancestor("others",type) or type == "others":
+            Result["Overall"]["privacy_collection_behavior_main_category"]["others"] += Result["Overall"]["privacy_collection_behavior_detail_category"][type]
+
+    for type in Result["Existence_Gap"]["privacy_collection_behavior_w/o_RPN_detail_category"].keys():
+        if AnalysisConfig.Ontology.is_ancestor("device_information",type) or type == "device_information":
+            Result["Existence_Gap"]["privacy_collection_behavior_w/o_RPN_main_category"]["device_information"] += Result["Existence_Gap"]["privacy_collection_behavior_w/o_RPN_detail_category"][type]
+        elif AnalysisConfig.Ontology.is_ancestor("personal_information",type) or type == "user_input":
+            Result["Existence_Gap"]["privacy_collection_behavior_w/o_RPN_main_category"]["user_input"] += Result["Existence_Gap"]["privacy_collection_behavior_w/o_RPN_detail_category"][type]
+        elif AnalysisConfig.Ontology.is_ancestor("permission",type) or type == "permission":
+            Result["Existence_Gap"]["privacy_collection_behavior_w/o_RPN_main_category"]["permission"] += Result["Existence_Gap"]["privacy_collection_behavior_w/o_RPN_detail_category"][type]
+        elif AnalysisConfig.Ontology.is_ancestor("others",type) or type == "others":
+            Result["Existence_Gap"]["privacy_collection_behavior_w/o_RPN_main_category"]["others"] += Result["Existence_Gap"]["privacy_collection_behavior_w/o_RPN_detail_category"][type]
 
 def countFinal(OPT):
     VagueClassifier.init()
@@ -197,8 +270,6 @@ def countFinal(OPT):
             "Vague_receiver": False,
             "Vague_purpose": False
         }
-        
-        NoticeTime = []
 
         if os.path.exists(OutPutPath):
             Result["Tested_App"] += 1
@@ -213,52 +284,13 @@ def countFinal(OPT):
             clickdeny_final_path = os.path.join(AnalysisConfig.OutPut,package,"clickdeny_final.json")
             VagueType_path = os.path.join(AnalysisConfig.OutPut,package,"VagueDataType.json")
 
-            get_Existence(Result["Overall"],Result["Existence_Gap"],Result["Existence_Gap_collect_before_notice"],AppCount_Path)
+            get_Existence(Result["Overall"],Result["Existence_Gap"],Result["Quality_Gap_collect_before_notice"],AppCount_Path)
             get_Quality_Element(Result["Overall"],Result["Quality_Gap_Element"],NERfinal_path,pagefinal_path,VagueLabel,Vague_Notice_label)
             get_Quality_Vague(Result["Quality_Gap_Vague_expression"],VagueType_path,VagueLabel,Vague_Notice_label)
             get_Quality_RPN_after_denying_request(Result["Quality_Gap_RPN_after_denying_request"],clickdeny_final_path)
             getTP(PrivacyLog_path)        
 
-
-    Result["vague"]["Identity_vagueness"]["notice"] = VagueClassifier.Vague_Identity_Notice_Count
-    Result["vague"]["Receiver_vagueness"]["notice"] = VagueClassifier.Vague_Receiver_Notice_Count
-    Result["vague"]["Purpose_vagueness"]["notice"] = VagueClassifier.Vague_Purpose_Notice_Count
-
-    Result["vague"]["Identity_vagueness"]["detail"] = VagueClassifier.Vague_Identity
-    Result["vague"]["Receiver_vagueness"]["detail"] = VagueClassifier.Vague_Receiver
-    Result["vague"]["Purpose_vagueness"]["detail"] = VagueClassifier.Vague_Purpose
-
-    Result["existence"]["overall_app_coverage"] = float(Result["existence"]["App_privacy_no_notice"]/Result["App"])
-    Result["existence"]["overall_behavior_coverage"] = float(Result["existence"]["privacy_collection_behavior_non_existence"]/Result["existence"]["privacy_collection_behavior"])
-    Result["existence"]["TP_network_behavior_coverage"] = float(Result["existence"]["privacy_collection_behavior_non_existence_TP"]/Result["existence"]["privacy_collection_behavior_non_existence_Net"])
-    Result["existence"]["collect_before_notice_type_coverage"] = float(Result["existence"]["collect_before_notice_type"]/Result["existence"]["notice_type"])
-
-    for type in Result["existence"]["privacy_collection_data_type"].keys():
-        sum = Result["existence"]["privacy_collection_data_type"][type]
-        if type in Result["existence"]["non_existence_data_type"].keys():
-            Result["existence"]["data_type_coverage"][type] = float(Result["existence"]["non_existence_data_type"][type]/sum)
-        else: Result["existence"]["data_type_coverage"][type] = 0.0
-
-        if AnalysisConfig.Ontology.is_ancestor("device_information",type) or type == "device_information":
-            Result["existence"]["privacy_collection_behavior_main"]["device_information"] += Result["existence"]["privacy_collection_data_type"][type]
-        elif AnalysisConfig.Ontology.is_ancestor("personal_information",type) or type == "personal_information":
-            Result["existence"]["privacy_collection_behavior_main"]["personal_information/user_input"] += Result["existence"]["privacy_collection_data_type"][type]
-        elif AnalysisConfig.Ontology.is_ancestor("permission",type) or type == "permission":
-            Result["existence"]["privacy_collection_behavior_main"]["permission"] += Result["existence"]["privacy_collection_data_type"][type]
-
-    for type in Result["existence"]["non_existence_data_type"].keys():
-        if AnalysisConfig.Ontology.is_ancestor("device_information",type) or type == "device_information":
-            Result["existence"]["privacy_collection_behavior_non_existence_main"]["device_information"] += Result["existence"]["non_existence_data_type"][type]
-        elif AnalysisConfig.Ontology.is_ancestor("personal_information",type) or type == "personal_information":
-            Result["existence"]["privacy_collection_behavior_non_existence_main"]["personal_information/user_input"] += Result["existence"]["non_existence_data_type"][type]
-        elif AnalysisConfig.Ontology.is_ancestor("permission",type) or type == "personal_information":
-            Result["existence"]["privacy_collection_behavior_non_existence_main"]["permission"] += Result["existence"]["non_existence_data_type"][type]
-
-    for type in Result["existence"]["privacy_collection_behavior_non_existence_Net_detail"].keys():
-        sum = Result["existence"]["privacy_collection_behavior_non_existence_Net_detail"][type]
-        if type in Result["existence"]["privacy_collection_behavior_non_existence_TP_detail"].keys():
-            Result["existence"]["TP_data_type_coverage"][type] = float(Result["existence"]["privacy_collection_behavior_non_existence_TP_detail"][type]/sum)
-        else: Result["existence"]["TP_data_type_coverage"][type] = 0.0
+    sort(Result)
 
     print(str(Result))
 

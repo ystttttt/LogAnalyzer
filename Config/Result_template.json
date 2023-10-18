@@ -23,19 +23,7 @@
             "device_information": 0,
             "others": 0
         },
-        "privacy_collection_behavior_w/o_RPN_detail_category": {},
-        "privacy_collection_behavior_w/o_RPN_detail_category_ratio": {},
-    },
-    "Existence_Gap_collect_before_notice": {
-        "App_w_collect_before_notice": 0,
-        "collect_before_notice_main_category": {
-            "permission": 0,
-            "personal_information/user_input": 0,
-            "device_information": 0,
-            "others": 0
-        },
-        "collect_before_notice_detail_category": {},
-        "RPN_data_type_collect_before_notice_ratio": 0.0
+        "privacy_collection_behavior_w/o_RPN_detail_category": {}
     },
     "Quality_Gap_Element" : { 
         "RPN": 0, 
@@ -59,14 +47,11 @@
             "five_elements":0,
             "six_elements":0,
             "seven_elements":0
-        },
-        "Data_type_in_RPN": 0,
-        "Data_type_in_RPN_main": {
-            "permission": 0,
-            "personal_information/user_input": 0,
-            "device_information": 0,
-            "others": 0
         }
+    },
+    "Quality_Gap_collect_before_notice": {
+        "App_w_collect_before_notice": 0,
+        "Data_type_RPN_collected_before_notice_ratio": 0.0
     },
     "Quality_Gap_RPN_after_denying_request": {
         "RPN_after_denying_request":0,
@@ -77,7 +62,9 @@
             "Denied_requests_permission":0,
             "RPN_after_denying_request_permission":0,
             "Denied_requests_device_info":0,
-            "RPN_after_denying_request_device_info":0
+            "RPN_after_denying_request_device_info":0,
+            "Denied_requests_others":0,
+            "RPN_after_denying_request_others":0
         }   
     },
     "Quality_Gap_Vague_expression" : {
@@ -92,14 +79,13 @@
             "app":0,
             "notice":0,
             "detail":"None"
-
         },
         "receiver_vague_expression": {
             "app":0,
             "notice":0,
             "detail":"None"
         },
-        "purpose_type_vague_expression": {
+        "purpose_vague_expression": {
             "app":0,
             "notice":0,
             "detail":"None"
