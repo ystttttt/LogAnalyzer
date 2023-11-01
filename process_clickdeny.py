@@ -42,7 +42,7 @@ def match_privacykeywords(data):
                             address_end = address_start + len(address_keyword)
                             if address_end == end:
                                 add_flag -= 1
-        if add_flag:
+        if add_flag > 0:
             for al_key in key_list:
                 if AnalysisConfig.Ontology.is_ancestor(al_key,key):
                     key_list.remove(al_key)
@@ -50,7 +50,7 @@ def match_privacykeywords(data):
                 elif AnalysisConfig.Ontology.is_ancestor(key,al_key):
                     add_flag = 0
                     break
-        if add_flag:
+        if add_flag > 0:
             key_list.add(key)
             add_flag = 0
     if "location" in key_list and "general_location" not in key_list:
