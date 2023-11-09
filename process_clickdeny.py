@@ -66,6 +66,11 @@ def check_ifgrantpermission(txt_file):
         return True
     if allow_pattern.search(long_sentence) is not None and "DENY" in long_sentence:
         return True
+    with open(txt_file[:-3]+"json", 'r', encoding='UTF-8')as f:
+        load_dict = loads(f.read())
+    if "com.google.android.permissioncontroller" in load_dict["foreground_activity"]:
+        return True
+    return False
 
 def check_timegap(key,timestamp):
     key_date = datetime.strptime(key,"%Y-%m-%d_%H%M%S")
