@@ -22,9 +22,11 @@ reader = easyocr.Reader(['en','de','fr','it','nl','es','sv','hr','cs','da','et',
 package = ""
  
 
-def check_ifbrowser(json_file):
+def checkif_browserorsetting(json_file):
     with open(json_file, 'r', encoding='UTF-8')as f:
         load_dict = loads(f.read())
+    if "com.android.settings" in load_dict["foreground_activity"]:
+        return True
     for activity in load_dict["activity_stack"]:
         if "chromium.chrome.browser" in activity or "com.google.android.finsky.activities.MainActivity" in activity:
             return True
@@ -181,8 +183,8 @@ def readjson_for_longsentence(input_dir,notice_input_path):
     for root, _, files in os.walk(input_dir):
         for file in files:
             if file.endswith('.json') and file != "NER_final.json" and file != "clickdeny_final.json":
-                if check_ifbrowser(os.path.join(root, file)):
-                    print(file," is a browser activity")
+                if checkif_browserorsetting(os.path.join(root, file)):
+                    print(file," is a browser activity or setting")
                     continue
                 print(file)
                 txtfile_path = os.path.join(root, file.replace(".json",".txt"))
