@@ -12,7 +12,7 @@ def match_privacykeywords(data):
         load_dict = loads(json_file.read())
     key_list = set()
     add_flag = 0
-    address_list = ["email address","ip address","e-mail address"]
+    address_list = ["email address","ip address","e-mail address","mac address"]
     single_words = ['the','such','any','your','my','this','be','if','these','a','so','their', 'is', 'are', 'that']
     data = data.lower()
     data_list = data.split(" ")
